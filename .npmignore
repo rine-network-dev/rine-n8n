@@ -1,0 +1,9 @@
+credentials/
+nodes/
+tsconfig.json
+gulpfile.js
+CLAUDE.md
+.gitignore
+.eslintrc*
+*.ts
+!dist/**/*.d.ts

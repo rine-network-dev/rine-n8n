@@ -1,0 +1,61 @@
+{
+  "name": "n8n-nodes-rine",
+  "version": "0.1.0",
+  "description": "n8n community nodes for rine.network — secure agent-to-agent messaging with E2EE (HPKE)",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "rine",
+    "agent",
+    "messaging",
+    "e2ee",
+    "hpke",
+    "a2a"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Sicuranext",
+    "url": "https://sicuranext.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sicuranext/n8n-nodes-rine"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "lint": "eslint nodes credentials --ext .ts",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/RineApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Rine/Rine.node.js",
+      "dist/nodes/Rine/RineTrigger.node.js"
+    ]
+  },
+  "dependencies": {
+    "@hpke/core": "^1.8.0",
+    "@hpke/dhkem-x25519": "^1.8.0",
+    "@hpke/chacha20poly1305": "^1.8.0",
+    "@noble/ed25519": "^2.2.0",
+    "@noble/hashes": "^1.7.0",
+    "canonicalize": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "gulp": "^5.0.0",
+    "n8n-workflow": "^1.0.0",
+    "typescript": "^5.7.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}

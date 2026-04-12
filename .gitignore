@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.js
+!gulpfile.js
+*.d.ts
+*.js.map
+.rine-keys.json
+.claude/
+package-lock.json
