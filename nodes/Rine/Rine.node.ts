@@ -30,6 +30,26 @@ import { saveOrgEntry, clearOrgEntry, KeystoreEntry } from './keystore';
 // Handler functions
 // =======================================================================
 
+/** Extract meaningful error detail from rine API errors */
+function rineError(err: unknown): string {
+	const e = err as {
+		response?: { data?: unknown };
+		message?: string;
+	};
+	const msg = e.message || String(err);
+	const data = e.response?.data;
+	if (data && typeof data === 'object') {
+		const d = data as Record<string, unknown>;
+		const detail = d.detail ?? d.error ?? d.message;
+		if (detail) {
+			const detailStr = typeof detail === 'string' ? detail : JSON.stringify(detail);
+			return `${msg} — ${detailStr}`;
+		}
+		return `${msg} — ${JSON.stringify(data)}`;
+	}
+	return msg;
+}
+
 // Shared send logic — encrypts payload and sends to recipient
 async function doSend(
 	ctx: IExecuteFunctions,
@@ -386,8 +406,8 @@ async function agentCreate(
 
 	// Save keys to keystore
 	const keystoreEntry: KeystoreEntry = {
-		agent_id: response.id,
-		agent_handle: response.handle,
+		agent_id: response.id as string,
+		agent_handle: response.handle as string | undefined,
 		signing_private_key: keys.signing.privateKey,
 		signing_public_key: keys.signing.publicKey,
 		encryption_private_key: keys.encryption.privateKey,
@@ -1264,37 +1284,56 @@ export class Rine implements INodeType {
 		const resource = this.getNodeParameter('resource', 0) as string;
 		const operation = this.getNodeParameter('operation', 0) as string;
 
-		const { creds, provisioned } = await ensureProvisioned(this, rawCreds);
+		// Skip auto-provisioning for agent operations that don't need a pre-existing agent
+		const skipProvisioning = resource === 'agent' && ['create', 'list', 'generateKeys'].includes(operation);
 
-		// Override agent ID and keys if the user selected a different agent
-		if (resource === 'message' || resource === 'webhook') {
-			const selectedAgent = this.getNodeParameter('agentId', 0, '') as string;
-			if (selectedAgent && selectedAgent !== creds.agentId) {
-				creds.agentId = selectedAgent;
-				// Try to load keys for this agent from the keystore
-				const agentEntry = getAgentEntry(creds.clientId, selectedAgent);
-				if (agentEntry) {
-					creds.signingPrivateKey = agentEntry.signing_private_key;
-					creds.signingPublicKey = agentEntry.signing_public_key;
-					creds.encryptionPrivateKey = agentEntry.encryption_private_key;
-					creds.encryptionPublicKey = agentEntry.encryption_public_key;
-					if (agentEntry.webhook_secret) {
-						creds.webhookSecret = agentEntry.webhook_secret;
+		let creds: ResolvedCredentials;
+		if (skipProvisioning) {
+			const baseUrl = rawCreds.baseUrl || 'https://rine.network';
+			creds = {
+				baseUrl,
+				clientId: rawCreds.clientId,
+				clientSecret: rawCreds.clientSecret,
+				agentId: rawCreds.agentId || '',
+				signingPrivateKey: rawCreds.signingPrivateKey || '',
+				signingPublicKey: rawCreds.signingPublicKey || '',
+				encryptionPrivateKey: rawCreds.encryptionPrivateKey || '',
+				encryptionPublicKey: rawCreds.encryptionPublicKey || '',
+				webhookSecret: rawCreds.webhookSecret,
+			};
+		} else {
+			const result = await ensureProvisioned(this, rawCreds);
+			creds = result.creds;
+
+			// Override agent ID and keys if the user selected a different agent
+			if (resource === 'message' || resource === 'webhook') {
+				const selectedAgent = this.getNodeParameter('agentId', 0, '') as string;
+				if (selectedAgent && selectedAgent !== creds.agentId) {
+					creds.agentId = selectedAgent;
+					const agentEntry = getAgentEntry(creds.clientId, selectedAgent);
+					if (agentEntry) {
+						creds.signingPrivateKey = agentEntry.signing_private_key;
+						creds.signingPublicKey = agentEntry.signing_public_key;
+						creds.encryptionPrivateKey = agentEntry.encryption_private_key;
+						creds.encryptionPublicKey = agentEntry.encryption_public_key;
+						if (agentEntry.webhook_secret) {
+							creds.webhookSecret = agentEntry.webhook_secret;
+						}
 					}
 				}
 			}
-		}
 
-		if (provisioned) {
-			returnData.push({
-				json: {
-					_rine_provisioned: true,
-					_rine_agent_id: creds.agentId,
-					_rine_agent_handle: creds.agentHandle || null,
-					_rine_keystore: getKeystorePath(),
-					_rine_note: 'Agent auto-provisioned. Keys saved to keystore. To use explicit credentials instead, fill in all key fields in the Rine credential.',
-				},
-			});
+			if (result.provisioned) {
+				returnData.push({
+					json: {
+						_rine_provisioned: true,
+						_rine_agent_id: creds.agentId,
+						_rine_agent_handle: creds.agentHandle || null,
+						_rine_keystore: getKeystorePath(),
+						_rine_note: 'Agent auto-provisioned. Keys saved to keystore. To use explicit credentials instead, fill in all key fields in the Rine credential.',
+					},
+				});
+			}
 		}
 
 		for (let i = 0; i < items.length; i++) {
@@ -1340,10 +1379,10 @@ export class Rine implements INodeType {
 				returnData.push({ json: result as INodeExecutionData['json'] });
 			} catch (error) {
 				if (this.continueOnFail()) {
-					returnData.push({ json: { error: (error as Error).message }, pairedItem: { item: i } });
+					returnData.push({ json: { error: rineError(error) }, pairedItem: { item: i } });
 					continue;
 				}
-				throw error;
+				throw new NodeOperationError(this.getNode(), rineError(error));
 			}
 		}
 

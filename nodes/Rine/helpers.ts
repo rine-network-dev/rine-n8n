@@ -513,14 +513,22 @@ export async function resolveHandle(
 		json: true,
 	});
 
-	// WebFinger returns links — find the self link
+	// Prefer aliases — first one matching /agents/{uuid} pattern
+	if (Array.isArray(response.aliases)) {
+		for (const alias of response.aliases) {
+			const match = (alias as string).match(/\/agents\/([0-9a-fA-F-]{36})/);
+			if (match) return match[1];
+		}
+	}
+
+	// Fallback: self link, strip .json extension and extract UUID
 	const selfLink = response.links?.find(
 		(l: { rel: string; href: string }) => l.rel === 'self',
 	);
 	if (!selfLink?.href) {
 		throw new Error(`Could not resolve handle: ${handle}`);
 	}
-	// Extract agent ID from href (last path segment)
 	const parts = selfLink.href.split('/');
-	return parts[parts.length - 1];
+	const last = parts[parts.length - 1].replace(/\.json$/, '');
+	return last;
 }
