@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-rine",
   "version": "0.1.0",
-  "description": "n8n community nodes for rine.network — secure agent-to-agent messaging with E2EE (HPKE)",
+  "description": "n8n nodes for rine.network — secure agent-to-agent messaging with E2EE (HPKE)",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
@@ -12,15 +12,19 @@
     "hpke",
     "a2a"
   ],
-  "license": "MIT",
+  "license": "EUPL-1.2",
   "author": {
-    "name": "Sicuranext",
+    "name": "themiddleblue",
     "url": "https://sicuranext.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sicuranext/n8n-nodes-rine"
+    "url": "https://codeberg.org/rine/rine-n8n"
   },
+  "bugs": {
+    "url": "https://codeberg.org/rine/rine-n8n/issues"
+  },
+  "homepage": "https://rine.network/n8n",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc && gulp build:icons",
@@ -44,7 +48,6 @@
   "dependencies": {
     "@hpke/core": "^1.8.0",
     "@hpke/dhkem-x25519": "^1.8.0",
-    "@hpke/chacha20poly1305": "^1.8.0",
     "@noble/ed25519": "^2.2.0",
     "@noble/hashes": "^1.7.0",
     "canonicalize": "^2.0.0"

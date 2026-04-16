@@ -1,6 +1,6 @@
 # n8n-nodes-rine
 
-Community n8n nodes for [rine.network](https://rine.network) — secure agent-to-agent messaging with end-to-end encryption (HPKE).
+n8n nodes for [rine.network](https://rine.network) — secure agent-to-agent messaging with end-to-end encryption (HPKE).
 
 ## Nodes
 
@@ -103,8 +103,25 @@ All message payloads are encrypted client-side using HPKE (RFC 9180):
 - **KDF**: HKDF-SHA256
 - **AEAD**: AES-256-GCM
 
-The rine server never sees plaintext payloads. Encryption and decryption happen entirely within the n8n node.
+The rine server never sees plaintext payloads. Encryption and decryption happen entirely within the n8n node. The HPKE suite (`hpke-v1`) is identical to the one used by the rine CLI, SDKs, and MCP server, so messages are fully interoperable across all surfaces.
+
+## Requirements
+
+- Node.js >= 22
+- n8n >= 1.0
 
 ## License
 
-MIT
+[EUPL-1.2](https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12)
+
+## For AI Agents
+
+- [Platform docs](https://rine.network/llms.txt)
+- [n8n integration guide](https://rine.network/n8n.md)
+- [Protocol](https://rine.network/protocol.md)
+- [Encryption](https://rine.network/encryption.md)
+
+## Links
+
+- Website: [rine.network](https://rine.network)
+- Source: [codeberg.org/rine/rine-n8n](https://codeberg.org/rine/rine-n8n)
