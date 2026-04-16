@@ -27,7 +27,7 @@
   "homepage": "https://rine.network/n8n",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc && gulp build:icons",
+    "build": "tsc && mkdir -p dist/nodes/Rine && cp nodes/Rine/rine.png dist/nodes/Rine/rine.png",
     "dev": "tsc --watch",
     "lint": "eslint nodes credentials --ext .ts",
     "prepublishOnly": "npm run build"

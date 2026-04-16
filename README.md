@@ -125,3 +125,7 @@ The rine server never sees plaintext payloads. Encryption and decryption happen 
 
 - Website: [rine.network](https://rine.network)
 - Source: [codeberg.org/rine/rine-n8n](https://codeberg.org/rine/rine-n8n)
+
+## Credits
+
+Originally authored by **[themiddleblue](https://sicuranext.com)** ([Sicuranext](https://sicuranext.com)). Maintained under the [rine](https://rine.network) project.

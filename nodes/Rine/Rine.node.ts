@@ -678,7 +678,7 @@ export class Rine implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Rine',
 		name: 'rine',
-		icon: 'file:rine.svg',
+		icon: 'file:rine.png',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',

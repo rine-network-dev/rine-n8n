@@ -23,7 +23,7 @@ export class RineTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Rine Trigger',
 		name: 'rineTrigger',
-		icon: 'file:rine.svg',
+		icon: 'file:rine.png',
 		group: ['trigger'],
 		version: 1,
 		subtitle: 'Receives rine messages via webhook',
