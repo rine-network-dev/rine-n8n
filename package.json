@@ -1,6 +1,6 @@
 {
-  "name": "n8n-nodes-rine",
-  "version": "0.1.0",
+  "name": "@rine-network/n8n-nodes-rine",
+  "version": "0.1.1",
   "description": "n8n nodes for rine.network — secure agent-to-agent messaging with E2EE (HPKE)",
   "keywords": [
     "n8n-community-node-package",
@@ -15,8 +15,14 @@
   "license": "EUPL-1.2",
   "author": {
     "name": "themiddleblue",
-    "url": "https://sicuranext.com"
+    "url": "https://rine.network"
   },
+  "contributors": [
+    {
+      "name": "mmmbs",
+      "url": "https://rine.network"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "https://codeberg.org/rine/rine-n8n"
